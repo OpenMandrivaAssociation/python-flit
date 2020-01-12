@@ -65,8 +65,7 @@ cd -
 PYTHONPATH=$(pwd):$(pwd)/flit_core %{__python3} -m flit build --format wheel
 
 %install
-%py3_install flit_core-%{version}-py2.py3-none-any.whl
-%py3_install flit-%{version}-py3-none-any.whl
+%py3_install
 
 %files
 %license LICENSE
