@@ -78,5 +78,5 @@ PYTHONPATH=$(pwd):$(pwd)/flit_core %{__python3} -m flit build --format wheel
 %files -n python-%{srcname}-core
 %license LICENSE
 %doc flit_core/README.rst
-%{python_sitelib}/flit_core-*.dist-info/
-%{python_sitelib}/flit_core/
+#{python_sitelib}/flit_core-*.dist-info/
+#{python_sitelib}/flit_core/
