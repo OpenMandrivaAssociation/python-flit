@@ -52,20 +52,11 @@ at flit_core.buildapi.
 
 %build
 export FLIT_NO_NETWORK=1
-# first, build flit_core with self
-# TODO do it in a less hacky way, this is reconstructed from pyoroject.toml
-cd flit_core
-PYTHONPATH=$(pwd) %{__python} -c 'from flit_core.build_thyself import build_wheel; build_wheel(".")'
+XDG_CACHE_HOME=$PWD/.cache python3 -m flit build --format wheel
 
-# %%py3_install_wheel unfortunately hardcodes installing from dist/
-mkdir ../dist
-mv flit_core-%{version}-py2.py3-none-any.whl ../dist
-cd -
-
-PYTHONPATH=$(pwd):$(pwd)/flit_core %{__python3} -m flit build --format wheel
 
 %install
-%py3_install
+pip3 install -I dist/%{python3_wheelname} --root %{buildroot} --strip-file-prefix %{buildroot} --no-deps
 
 %files
 %license LICENSE
