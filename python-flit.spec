@@ -2,7 +2,7 @@
 
 Name:		python-%{srcname}
 Version:	2.1.0
-Release:	%mkrel 2
+Release:	1
 Summary:	Simplified packaging of Python modules
 
 # ./flit/logo.py  under ASL 2.0 license
@@ -12,7 +12,7 @@ Group:          Development/Python
 URL:		https://flit.readthedocs.io/en/latest/
 Source0:	https://pypi.io/packages/source/f/%{srcname}/%{srcname}-%{version}.tar.gz
 BuildArch:	noarch
-BuildRequires:	pkgconfig(python3)
+BuildRequires:	pkgconfig(python)
 BuildRequires:	python3dist(pip)
 BuildRequires:	python3dist(requests)
 BuildRequires:	python3dist(docutils)
@@ -36,36 +36,13 @@ included automatically.
 Flit requires Python 3, but you can use it to distribute modules for Python 2,
 so long as they can be imported on Python 3.
 
-%package -n python3-%{srcname}
-Group:		Development/Python
-Summary:	Simplified packaging of Python modules
-%{?python_provide:%python_provide python3-%{srcname}}
-Requires:	python3-%{srcname}-core = %{version}-%{release}
-
-# soft dependency: (WARNING) Cannot analyze code. Pygments package not found.
-Recommends:	python3-pygments
-
-
-%description -n python3-%{srcname}
-Flit is a simple way to put Python packages and modules on PyPI.
-
-Flit only creates packages in the new 'wheel' format. People using older
-versions of pip (<1.5) or easy_install will not be able to install them.
-
-Flit packages a single importable module or package at a time, using the import
-name as the name on PyPI. All subpackages and data files within a package are
-included automatically.
-
-Flit requires Python 3, but you can use it to distribute modules for Python 2,
-so long as they can be imported on Python 3.
-
-%package -n python3-%{srcname}-core
+%package -n python-%{srcname}-core
 Group:		Development/Python
 Summary:	PEP 517 build backend for packages using Flit
-%{?python_provide:%python_provide python3-%{srcname}-core}
-Conflicts:	python3-%{srcname} < 2.1.0-2
+%{?python_provide:%python_provide python-%{srcname}-core}
+Conflicts:	python-%{srcname} < 2.1.0-2
 
-%description -n python3-%{srcname}-core
+%description -n python-%{srcname}-core
 This provides a PEP 517 build backend for packages using Flit.
 The only public interface is the API specified by PEP 517,
 at flit_core.buildapi.
@@ -78,7 +55,7 @@ export FLIT_NO_NETWORK=1
 # first, build flit_core with self
 # TODO do it in a less hacky way, this is reconstructed from pyoroject.toml
 cd flit_core
-PYTHONPATH=$(pwd) %{__python3} -c 'from flit_core.build_thyself import build_wheel; build_wheel(".")'
+PYTHONPATH=$(pwd) %{__python} -c 'from flit_core.build_thyself import build_wheel; build_wheel(".")'
 
 # %%py3_install_wheel unfortunately hardcodes installing from dist/
 mkdir ../dist
@@ -91,16 +68,16 @@ PYTHONPATH=$(pwd):$(pwd)/flit_core %{__python3} -m flit build --format wheel
 %py3_install_wheel flit_core-%{version}-py2.py3-none-any.whl
 %py3_install_wheel flit-%{version}-py3-none-any.whl
 
-%files -n python3-%{srcname}
+%files
 %license LICENSE
 %doc README.rst
-%{python3_sitelib}/flit-*.dist-info/
-%{python3_sitelib}/flit/
+%{python_sitelib}/flit-*.dist-info/
+%{python_sitelib}/flit/
 %{_bindir}/flit
 
 
-%files -n python3-%{srcname}-core
+%files -n python-%{srcname}-core
 %license LICENSE
 %doc flit_core/README.rst
-%{python3_sitelib}/flit_core-*.dist-info/
-%{python3_sitelib}/flit_core/
+%{python_sitelib}/flit_core-*.dist-info/
+%{python_sitelib}/flit_core/
