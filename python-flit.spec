@@ -1,7 +1,7 @@
 %define srcname flit
 
 Name:		python-%{srcname}
-Version:	2.1.0
+Version:	3.6.0
 Release:	1
 Summary:	Simplified packaging of Python modules
 
@@ -22,6 +22,7 @@ BuildRequires:	python3dist(certifi)
 BuildRequires:	python3dist(urllib3)
 BuildRequires:	python3dist(chardet)
 BuildRequires:	python3dist(pytoml)
+BuildRequires:	python3dist(wheel)
 
 %description
 Flit is a simple way to put Python packages and modules on PyPI.
@@ -41,6 +42,7 @@ Group:		Development/Python
 Summary:	PEP 517 build backend for packages using Flit
 %{?python_provide:%python_provide python-%{srcname}-core}
 Conflicts:	python-%{srcname} < 2.1.0-2
+Provides:	python-tomli
 
 %description -n python-%{srcname}-core
 This provides a PEP 517 build backend for packages using Flit.
@@ -52,31 +54,36 @@ at flit_core.buildapi.
 
 %build
 export FLIT_NO_NETWORK=1
-# first, build flit_core with self
-# TODO do it in a less hacky way, this is reconstructed from pyoroject.toml
 cd flit_core
-PYTHONPATH=$(pwd) %{__python} -c 'from flit_core.build_thyself import build_wheel; build_wheel(".")'
 
-# %%py3_install_wheel unfortunately hardcodes installing from dist/
-mkdir ../dist
-mv flit_core-%{version}-py2.py3-none-any.whl ../dist
+%{__python3} -m pip wheel --wheel-dir %{_builddir} --no-deps --use-pep517 --no-build-isolation \
+			 --disable-pip-version-check --no-clean --progress-bar off --verbose .
 cd -
 
-PYTHONPATH=$(pwd):$(pwd)/flit_core %{__python3} -m flit build --format wheel
+export PYTHONPATH=$PWD:$PWD/flit_core
+
+%{__python3} -m pip wheel --wheel-dir %{_builddir} --no-deps --use-pep517 --no-build-isolation \
+			 --disable-pip-version-check --no-clean --progress-bar off --verbose .
+
 
 %install
-%py3_install
+cd -
+
+%{__python3} -m pip install --root %{buildroot} --no-deps --disable-pip-version-check --progress-bar off \
+			    --verbose --ignore-installed --no-warn-script-location --no-index --no-cache-dir \
+			    --find-links %{_builddir} *.whl
+
 
 %files
 %license LICENSE
 %doc README.rst
-#{python_sitelib}/flit-*.dist-info/
-#{python_sitelib}/flit/
-#{_bindir}/flit
+%{python_sitelib}/flit-*.dist-info/
+%{python_sitelib}/flit/
+%{_bindir}/flit
 
 
 %files -n python-%{srcname}-core
 %license LICENSE
 %doc flit_core/README.rst
-#{python_sitelib}/flit_core-*.dist-info/
-#{python_sitelib}/flit_core/
+%{python_sitelib}/flit_core-*.dist-info/
+%{python_sitelib}/flit_core/
