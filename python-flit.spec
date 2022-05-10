@@ -2,13 +2,13 @@
 
 Name:		python-%{srcname}
 Version:	2.1.0
-Release:	1
+Release:	2
 Summary:	Simplified packaging of Python modules
 
-# ./flit/logo.py  under ASL 2.0 license
+# ./flit/logo.py under ASL 2.0 license
 # ./flit/upload.py under PSF license
 License:	BSD and ASL 2.0 and Python
-Group:          Development/Python
+Group:		Development/Python
 URL:		https://flit.readthedocs.io/en/latest/
 Source0:	https://pypi.io/packages/source/f/%{srcname}/%{srcname}-%{version}.tar.gz
 BuildArch:	noarch
@@ -36,6 +36,15 @@ included automatically.
 Flit requires Python 3, but you can use it to distribute modules for Python 2,
 so long as they can be imported on Python 3.
 
+%files
+%license LICENSE
+%doc README.rst
+%{python_sitelib}/flit-*.dist-info/
+%{python_sitelib}/flit/
+%{_bindir}/flit
+
+#----------------------------------------------------------------------------
+
 %package -n python-%{srcname}-core
 Group:		Development/Python
 Summary:	PEP 517 build backend for packages using Flit
@@ -46,6 +55,14 @@ Conflicts:	python-%{srcname} < 2.1.0-2
 This provides a PEP 517 build backend for packages using Flit.
 The only public interface is the API specified by PEP 517,
 at flit_core.buildapi.
+
+%files -n python-%{srcname}-core
+%license LICENSE
+%doc flit_core/README.rst
+%{python_sitelib}/flit_core-*.dist-info/
+%{python_sitelib}/flit_core/
+
+#----------------------------------------------------------------------------
 
 %prep
 %autosetup -p1 -n %{srcname}-%{version}
@@ -65,18 +82,8 @@ cd -
 PYTHONPATH=$(pwd):$(pwd)/flit_core %{__python3} -m flit build --format wheel
 
 %install
-%py3_install
+cd -
+%{__python3} -m pip install --root %{buildroot} --no-deps --disable-pip-version-check --progress-bar off \
+			--verbose --ignore-installed --no-warn-script-location --no-index --no-cache-dir \
+			--find-links %{_builddir} *.whl
 
-%files
-%license LICENSE
-%doc README.rst
-#{python_sitelib}/flit-*.dist-info/
-#{python_sitelib}/flit/
-#{_bindir}/flit
-
-
-%files -n python-%{srcname}-core
-%license LICENSE
-%doc flit_core/README.rst
-#{python_sitelib}/flit_core-*.dist-info/
-#{python_sitelib}/flit_core/
