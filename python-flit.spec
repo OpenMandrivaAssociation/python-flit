@@ -82,8 +82,7 @@ cd -
 PYTHONPATH=$(pwd):$(pwd)/flit_core %{__python3} -m flit build --format wheel
 
 %install
-cd -
 %{__python3} -m pip install --root %{buildroot} --no-deps --disable-pip-version-check --progress-bar off \
 			--verbose --ignore-installed --no-warn-script-location --no-index --no-cache-dir \
-			--find-links %{_builddir} *.whl
+			--find-links . dist/*.whl
 
