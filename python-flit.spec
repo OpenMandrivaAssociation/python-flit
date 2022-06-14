@@ -2,7 +2,7 @@
 
 Name:		python-%{srcname}
 Version:	3.7.1
-Release:	2
+Release:	3
 Summary:	Simplified packaging of Python modules
 
 # ./flit/logo.py under ASL 2.0 license
