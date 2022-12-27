@@ -1,8 +1,8 @@
 %define srcname flit
 
 Name:		python-%{srcname}
-Version:	3.7.1
-Release:	3
+Version:	3.8.0
+Release:	1
 Summary:	Simplified packaging of Python modules
 
 # ./flit/logo.py under ASL 2.0 license
