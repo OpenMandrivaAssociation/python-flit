@@ -1,7 +1,7 @@
 %define srcname flit
 
 Name:		python-%{srcname}
-Version:	3.12.0
+Version:	4.1.0
 Release:	1
 Summary:	Simplified packaging of Python modules
 
